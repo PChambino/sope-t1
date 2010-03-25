@@ -3,6 +3,10 @@
 #define _CMD_H_
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_PROMPT_LINE 1024 // maximo tamanho da linha recebida no prompt
 
 typedef struct {
 	char **arg; // lista de argumentos (terminada com NULL)

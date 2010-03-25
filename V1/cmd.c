@@ -51,3 +51,24 @@ void print_cmd(Command_Info *cmd_info) {
 	printf("Background: %d\n", cmd_info->background);	
 }
 
+void prompt() {
+	char line[MAX_PROMPT_LINE];
+	Command_Info cmd;
+	// Maximo de tokens possiveis a partir do tamanhdo maximo da linha
+	cmd.arg = (char **) calloc( MAX_PROMPT_LINE / 2 + 1, sizeof(char *));
+	
+	while (1) {
+		printf("msh$ ");	fflush(stdin);
+		fgets(line, MAX_PROMPT_LINE, stdin);
+		if (feof(stdin) || ferror(stdin))
+			break;
+		if (parse_cmd(line, &cmd) == 0)
+			printf("OK\n");
+		else
+			printf("Err\n");
+		print_cmd(&cmd);
+	}
+	
+	free(cmd.arg);
+}
+
