@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -c
+CFLAGS=-Wall
 
 PROG=../bin/msh_v1
 OBJS=main.o cmd.o
@@ -8,12 +8,8 @@ OBJS=main.o cmd.o
 $(PROG): $(OBJS)
 	$(CC) $^ -o $@
 	
-%.o: %.c %.h
-	$(CC) $(CFLAGS) $< -o $@
-
-main.o: main.c cmd.h
-	$(CC) $(CFLAGS) $< -o $@
+cmd.o: cmd.h
+main.o: cmd.h
 
 clean:
 	rm $(OBJS) $(PROG)
-	
