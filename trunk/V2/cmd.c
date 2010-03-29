@@ -65,9 +65,21 @@ void prompt() {
 		fgets(line, MAX_PROMPT_LINE, stdin);
 		if (feof(stdin) || ferror(stdin))
 			break;
-		if (parse_cmd(line, &cmd) == 0)
-			if ((child = exec_simple(&cmd)) > 0)
-				waitpid(child, &status, 0);
+
+		if (parse_cmd(line, &cmd) != 0) {
+			printf("Syntax error!\n");
+			continue;
+		}
+			
+		if (strcmp(cmd.arg[0], "exit") == 0) // builtin command exit
+			break;
+			
+		if ((child = exec_simple(&cmd)) > 0) {
+			waitpid(child, &status, 0);
+			
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
+				printf("Command Not Found!\n");
+		}
 	}
 	
 	free(cmd.arg);
