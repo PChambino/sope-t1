@@ -1,5 +1,5 @@
 
-#include "cmd.h"
+#include "msh.h"
 
 int main() {
 	prompt();
