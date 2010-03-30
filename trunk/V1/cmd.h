@@ -6,13 +6,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_PROMPT_LINE 1024 ///< maximo tamanho da linha recebida no prompt
-
 typedef struct {
 	char **arg; ///< lista de argumentos (terminada com NULL)
-	char *infile; ///< fich. p/onde redireccionar stdin ou NULL	char *outfile; ///< fich. p/onde redirecc. stdout ou NULL
+	char *infile; ///< fich. p/onde redireccionar stdin ou NULL
+	char *outfile; ///< fich. p/onde redirecc. stdout ou NULL
 	int background;	///< 0 ou 1(=proc.o a executar em background)
 } Command_Info ;
+
+/** Cria um Command_Info.
+	Usando o tamanho maximo da linha prompt, alocando espaco na
+	memoria para (max_prompt_line / 2 + 1) tokens.
+*/
+Command_Info* newCommand_Info(int max_prompt_line);
+
+/** Liberta a memória usada pelo Command_Info.
+*/
+void deleteCommand_Info(Command_Info *cmd_info);
 
 /** Recebe uma string que representa um commando
 	e constroi a estrutura Command_Info.
@@ -25,10 +34,5 @@ int parse_cmd(char *cmd_line, Command_Info *cmd_info);
 	Função para teste.
 */
 void print_cmd(Command_Info *cmd_info);
-
-/** Inicia o prompt da mini shell.
-	Le os comandos e imprime-os indicando se parse_cmd deu erro ou nao.
-*/
-void prompt();
 
 #endif // _CMD_H_
