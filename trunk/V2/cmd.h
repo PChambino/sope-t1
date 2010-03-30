@@ -30,9 +30,16 @@ void deleteCommand_Info(Command_Info *cmd_info);
 */
 int parse_cmd(char *cmd_line, Command_Info *cmd_info);
 
-/**	Imprime o Command_Info para o stdout.
+/** Imprime o Command_Info para o stdout.
 	Função para teste.
 */
 void print_cmd(Command_Info *cmd_info);
 
+/** Verifica se o Command_Info nao tem nenhum comando.
+	@return 1 se Command_Info nao tem nenhum comando e 0 caso
+	contrario.
+*/
+int cmd_empty(Command_Info *cmd_info);
+
 #endif // _CMD_H_
+

@@ -15,7 +15,8 @@ void prompt() {
 			break;
 
 		if (parse_cmd(line, cmd_info) != 0) {
-			printf("Syntax error!\n");
+			if (!cmd_empty(cmd_info))
+				printf("Syntax error!\n");
 			continue;
 		}
 			

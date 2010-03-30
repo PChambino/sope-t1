@@ -64,4 +64,13 @@ void print_cmd(Command_Info *cmd_info) {
 	printf("Background: %d\n", cmd_info->background);	
 }
 
+int cmd_empty(Command_Info *cmd_info) {
+	if(cmd_info->arg[0] == NULL 
+		&& cmd_info->infile == NULL
+		&& cmd_info->outfile == NULL
+		&& cmd_info->background == 0)
+		return 1;
+
+	return 0;
+}
 
