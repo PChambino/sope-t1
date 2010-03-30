@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 #include "cmd.h"
 
 /** Executa o comando.

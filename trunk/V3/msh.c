@@ -26,8 +26,17 @@ void prompt() {
 		if ((child = exec_simple(cmd_info)) > 0) {
 			waitpid(child, &status, 0);
 			
-			if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
-				printf("Command Not Found!\n");
+			if (WIFEXITED(status))
+				switch (WEXITSTATUS(status)) {
+					case 1:
+						printf("Command Not Found!\n");
+						break;
+					case 2:
+						printf("File Not Found! (%s)\n", cmd_info->infile);
+						break;
+					default:
+						break;
+				}
 		}
 	}
 
