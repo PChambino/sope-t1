@@ -2,7 +2,7 @@
 CC=gcc
 CFLAGS=-Wall
 
-PROG=../bin/msh_v3
+PROG=../bin/msh_v4
 OBJS=main.o cmd.o msh.o exec.o
 
 $(PROG): $(OBJS)
