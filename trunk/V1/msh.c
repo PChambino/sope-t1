@@ -6,7 +6,7 @@ void prompt() {
 	Command_Info* cmd_info = newCommand_Info(MAX_PROMPT_LINE);
 	
 	while (1) {
-		printf("msh$ ");	fflush(stdin);
+		printf("msh$ ");	fflush(stdout);
 		fgets(line, MAX_PROMPT_LINE, stdin);
 		if (feof(stdin) || ferror(stdin))
 			break;

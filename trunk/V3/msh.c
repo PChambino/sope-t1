@@ -9,14 +9,14 @@ void prompt() {
 	int status = 0;
 
 	while (1) {
-		printf("msh$ ");	fflush(stdin);
+		printf("msh$ ");	fflush(stdout);
 		fgets(line, MAX_PROMPT_LINE, stdin);
 		if (feof(stdin) || ferror(stdin))
 			break;
 
 		if (parse_cmd(line, cmd_info) != 0) {
 			if (!cmd_empty(cmd_info))
-				printf("Syntax error!\n");
+				fprintf(stderr, "Syntax error!\n");
 			continue;
 		}
 			
@@ -29,10 +29,10 @@ void prompt() {
 			if (WIFEXITED(status))
 				switch (WEXITSTATUS(status)) {
 					case 1:
-						printf("Command Not Found!\n");
+						fprintf(stderr, "Command Not Found!\n");
 						break;
 					case 2:
-						printf("File Not Found! (%s)\n", cmd_info->infile);
+						fprintf(stderr, "File Not Found! (%s)\n", cmd_info->infile);
 						break;
 					default:
 						break;
