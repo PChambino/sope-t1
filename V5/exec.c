@@ -63,6 +63,9 @@ pid_t exec_simple_back(Command_Info *cmd_info) {
 		dup2(file, STDOUT_FILENO);
 	}
 	
+	// set process group, so it won't receive sigint
+	setpgid(child, child);
+	
 	// execute command
 	execvp(cmd_info->arg[0], cmd_info->arg);
 	
