@@ -1,24 +1,30 @@
 
 #include "msh.h"
 
-static pid_t child = 0; ///< PID of child process
+static pid_t child = 0; ///< PID of child process, maior que 0 se ha um processo a correr em foreground
 static int status = 0; ///< Process status
+static pid_t childBG = 0; ///< PID of a child process, variavel auxiliar
 
 void sigint_handler(int sig) {
-	if (child > 0)
+	if (child > 0) { // exists a child running in foreground
 		kill(child, SIGINT);
+		printf("\n");
+	}
 }
 
 void sigchld_handler(int sig) {
-	if (child > 0) // child is not in background
+	childBG = wait(&status);
+
+	if (childBG <= 0) // Filho invalido!
 		return;
-		
-	child = wait(&status);
-	if (child > 0) {
-		checkStatus(&status);
-		printf("PID %d Done\n", child);
+
+	checkStatus(&status);	
+	
+	if (childBG == child) { // Filho que terminou estava em foreground!
+		child = 0; // Reset child para 0, indicando que nao ha nenhum processo em foreground
+	} else { // Filho que terminou estava em background
+		printf("PID %d Done\n", childBG);
 	}
-	child = 0;
 }
 
 void prompt() {
@@ -48,15 +54,12 @@ void prompt() {
 			break;
 		
 		if (cmd_info->background == 1) { // Background execution
-			child = exec_simple_back(cmd_info);
-			if (child > 0)
-				printf("PID %d\n", child);
-			child = 0;
+			childBG = exec_simple_back(cmd_info);
+			if (childBG > 0)
+				printf("PID %d\n", childBG);
 		}
 		else if ((child = exec_simple(cmd_info)) > 0) { // Foreground execution
-			waitpid(child, &status, 0);
-			checkStatus(&status);
-			child = 0; // reset child to 0 so it knows when to send the SIGINT signal
+			while (child > 0) {} // espera enquanto processo em foreground ainda esta a correr
 		}
 	}
 
