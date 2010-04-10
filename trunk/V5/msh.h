@@ -15,6 +15,7 @@ void sigint_handler(int sig);
 
 /** SIGCHLD handler.
 	Waits for the child, and processes it's status.
+	Diferenciates a background process from a foreground one.
 */
 void sigchld_handler(int sig);
 
