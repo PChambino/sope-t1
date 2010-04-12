@@ -5,7 +5,7 @@ static pid_t child = 0; ///< PID of child process
 
 void sigint_handler(int sig) {
 	if (child != 0)
-		kill(child, SIGINT);
+		kill(child, SIGKILL);
 }
 
 void prompt() {
