@@ -7,7 +7,7 @@ static pid_t childBG = 0; ///< PID of a child process, variavel auxiliar
 
 void sigint_handler(int sig) {
 	if (child > 0) { // exists a child running in foreground
-		kill(child, SIGINT);
+		kill(child, SIGKILL);
 		printf("\n");
 	}
 }
