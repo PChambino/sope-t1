@@ -25,7 +25,10 @@ pid_t exec_simple(Command_Info *cmd_info) {
 		int file = open(cmd_info->outfile, O_WRONLY | O_CREAT, 0644);
 		dup2(file, STDOUT_FILENO);
 	}
-	
+
+	// set process group, so it won't receive signals sent to the msh
+	setpgid(child, child);
+
 	// execute command
 	execvp(cmd_info->arg[0], cmd_info->arg);
 	
