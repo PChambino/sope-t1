@@ -7,6 +7,9 @@ Command_Info* newCommand_Info(int max_prompt_line) {
 	// Maximo de tokens possiveis a partir do tamanho maximo da linha
 	cmd->arg = (char **) calloc( max_prompt_line / 2 + 1, sizeof(char *));
 	
+	cmd->next = NULL;
+	cmd_clear(cmd);
+	
 	return cmd;
 }
 
@@ -31,7 +34,6 @@ int parse_cmd(char *cmd_line, Command_Info *cmd_info) {
 	int count = 0;
 	
 	for (token = strtok(cmd_line, sep); token != NULL; token = strtok(NULL, sep)) {
-		printf("token: %s\n", token);
 		if (strcmp(token, "<") == 0) { // infile
 			token = strtok(NULL, sep);
 			if (token == NULL)
@@ -46,10 +48,14 @@ int parse_cmd(char *cmd_line, Command_Info *cmd_info) {
 			token = strtok(NULL, sep);
 			if (token != NULL) // apenas pode ser o ultimo token
 				return -1;
-			cmd->background = 1;
+			cmd_info->background = 1; // a indicacao do background fica no primeiro commando
 		} else if (strcmp(token, "|") == 0) { // pipe
+			cmd->arg[count] = NULL;
+			if (count == 0) // commando vazio
+				return -1;
+
+			count = 0;			
 			cmd->next = newCommand_Info(MAX_PROMPT_LINE);
-			cmd_clear(cmd->next);
 			cmd = cmd->next;
 		} else { // arg
 			cmd->arg[count++] = token;
@@ -65,10 +71,10 @@ int parse_cmd(char *cmd_line, Command_Info *cmd_info) {
 
 void print_cmd(Command_Info *cmd_info) {
 	Command_Info *cmd = cmd_info;
+	int i;
 	for (cmd = cmd_info; cmd != NULL; cmd = cmd->next) {
 		printf("Command:\n");
 		printf("Args:");
-		int i;
 		for (i = 0; cmd->arg[i] != NULL; ++i)
 			printf(" %s", cmd->arg[i]);
 		printf("\n");

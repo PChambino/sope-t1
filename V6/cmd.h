@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Declaracao previa da estrutura Command_Info para se possivel incluir
+// Declaracao previa da estrutura Command_Info para ser possivel incluir
 // um campo 'recursivo' que aponta para o proximo commando
 typedef struct Command_Info Command_Info;
 
@@ -15,7 +15,7 @@ struct Command_Info {
 	char *infile; ///< fich. p/onde redireccionar stdin ou NULL
 	char *outfile; ///< fich. p/onde redirecc. stdout ou NULL
 	int background;	///< 0 ou 1(=proc.o a executar em background)
-	Command_Info *next; ///< points to next command linked by a pipe
+	Command_Info *next; ///< proximo comando a executar com pipes
 };
 
 /** Cria um Command_Info.
