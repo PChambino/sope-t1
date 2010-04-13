@@ -50,17 +50,16 @@ void prompt() {
 				fprintf(stderr, "Syntax error!\n");
 			continue;
 		}
-		print_cmd(cmd_info);
 			
 		if (strcmp(cmd_info->arg[0], "exit") == 0) // builtin command exit
 			break;
 		
 		if (cmd_info->background == 1) { // Background execution
-			childBG = exec_simple_back(cmd_info);
+			childBG = exec_pipe(cmd_info);
 			if (childBG > 0)
 				printf("PID %d\n", childBG);
 		}
-		else if ((child = exec_simple(cmd_info)) > 0) { // Foreground execution
+		else if ((child = exec_pipe(cmd_info)) > 0) { // Foreground execution
 			while (child > 0) {} // espera enquanto processo em foreground ainda esta a correr
 		}
 	}
@@ -71,6 +70,8 @@ void prompt() {
 void checkStatus(const int *status) {
 	if (WIFEXITED(*status))
 		switch (WEXITSTATUS(*status)) {
+			case 0:
+				break;
 			case 1:
 				fprintf(stderr, "Command Not Found!\n");
 				break;

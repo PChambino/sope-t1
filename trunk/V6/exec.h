@@ -22,5 +22,11 @@ pid_t exec_simple(Command_Info *cmd_info);
 */
 pid_t exec_simple_back(Command_Info *cmd_info);
 
+/** Executa o comando com pipes.
+
+	@return a PID do processo, ou -1 em caso de erro no fork
+*/
+pid_t exec_pipe(Command_Info *cmd_info);
+
 #endif // _EXEC_H_
 

@@ -10,7 +10,7 @@ $(PROG): $(OBJS)
 	
 exec.o: exec.h cmd.h
 msh.o: msh.h cmd.h exec.h
-cmd.o: cmd.h
+cmd.o: cmd.h msh.h
 main.o: msh.h
 
 clean:
