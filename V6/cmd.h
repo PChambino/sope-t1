@@ -6,12 +6,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
+// Declaracao previa da estrutura Command_Info para se possivel incluir
+// um campo 'recursivo' que aponta para o proximo commando
+typedef struct Command_Info Command_Info;
+
+struct Command_Info {
 	char **arg; ///< lista de argumentos (terminada com NULL)
 	char *infile; ///< fich. p/onde redireccionar stdin ou NULL
 	char *outfile; ///< fich. p/onde redirecc. stdout ou NULL
 	int background;	///< 0 ou 1(=proc.o a executar em background)
-} Command_Info ;
+	Command_Info *next; ///< points to next command linked by a pipe
+};
 
 /** Cria um Command_Info.
 	Usando o tamanho maximo da linha prompt, alocando espaco na
@@ -40,6 +45,10 @@ void print_cmd(Command_Info *cmd_info);
 	contrario.
 */
 int cmd_empty(Command_Info *cmd_info);
+
+/** Limpa o commando tornando-o vazio.
+*/
+void cmd_clear(Command_Info *cmd_info);
 
 #endif // _CMD_H_
 

@@ -7,7 +7,7 @@ static pid_t childBG = 0; ///< PID of a child process, variavel auxiliar
 
 void sigint_handler(int sig) {
 	if (child > 0) { // exists a child running in foreground
-		kill(child, SIGINT);
+		kill(child, SIGKILL);
 		printf("\n");
 	}
 }
@@ -44,11 +44,13 @@ void prompt() {
 		if (feof(stdin) || ferror(stdin))
 			break;
 
+		cmd_clear(cmd_info); // limpa o comando antes de fazer parse
 		if (parse_cmd(line, cmd_info) != 0) {
 			if (!cmd_empty(cmd_info))
 				fprintf(stderr, "Syntax error!\n");
 			continue;
 		}
+		print_cmd(cmd_info);
 			
 		if (strcmp(cmd_info->arg[0], "exit") == 0) // builtin command exit
 			break;
