@@ -1,30 +1,46 @@
 
 #include "msh.h"
 
-static pid_t child = 0; ///< PID of child process, maior que 0 se ha um processo a correr em foreground
+static pid_t* children = NULL; ///< PID of child processes
+static pid_t* childrenBG = 0; ///< PID of first child process on background
 static int status = 0; ///< Process status
-static pid_t childBG = 0; ///< PID of a child process, variavel auxiliar
+static pid_t child = 0; ///< PID of a child process, variavel auxiliar
+
+static int childIn(pid_t id, pid_t *arr) {
+	int i = 0;
+	for (i = 0; arr[i] != 0; i++) {
+		if (arr[i] == id)
+			return i;
+	}
+	return -1;
+}
 
 void sigint_handler(int sig) {
-	if (child > 0) { // exists a child running in foreground
-		kill(child, SIGKILL);
-		printf("\n");
+	if(children == NULL)
+		return;
+		
+	// exists children running in foreground
+	int i = 0;	
+	for (i = 0; children[i] != 0; i++) {
+		if (children[i] > 0)
+			kill(children[i], SIGKILL);
 	}
+	printf("\n");
 }
 
 void sigchld_handler(int sig) {
-	childBG = wait(&status);
+	child = wait(&status);
 
-	if (childBG <= 0) // Filho invalido!
+	if (child <= 0) // Filho invalido!
 		return;
 
 	checkStatus(&status);	
 	
-	if (childBG == child) { // Filho que terminou estava em foreground!
+	/*if (childIn(child, children) != -1) { // Filho que terminou estava em foreground!
 		child = 0; // Reset child para 0, indicando que nao ha nenhum processo em foreground
 	} else { // Filho que terminou estava em background
 		printf("PID %d Done\n", childBG);
-	}
+	}*/
 }
 
 void prompt() {
@@ -55,12 +71,19 @@ void prompt() {
 			break;
 		
 		if (cmd_info->background == 1) { // Background execution
-			childBG = exec_pipe(cmd_info);
-			if (childBG > 0)
-				printf("PID %d\n", childBG);
+			childrenBG = exec_pipe(cmd_info);
+			if (childrenBG != NULL) {
+				printf("PID %d\n", childrenBG[0]);
+				free(childrenBG);
+				childrenBG = NULL;
+			}
 		}
-		else if ((child = exec_pipe(cmd_info)) > 0) { // Foreground execution
-			while (child > 0) {} // espera enquanto processo em foreground ainda esta a correr
+		else if ((children = exec_pipe(cmd_info)) > 0) { // Foreground execution
+			//while (children != NULL) {} // espera enquanto processo em foreground ainda esta a correr
+			if (children != NULL) {
+				free(children);
+				children = NULL;
+			}
 		}
 	}
 
