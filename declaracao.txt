@@ -1,0 +1,8 @@
+AUTORES:
+080509097 – Eva Marina de Almeida Simões Marques
+080509143 – Pedro Boloto Chambino
+
+DECLARAÇÃO: Declaramos sob compromisso de honra que este trabalho nas suas partes constituintes de código (e relatório, se aplicável) é original e da nossa autoria, não correspondendo, portanto, a cópia ou tradução de outros trabalhos já realizados, na FEUP ou fora dela. Mais declaramos que todos os documentos ou código que serviram de base ao desenvolvimento do trabalho descrito no relatório e seus anexos são adequadamente citados e explicitados na respectiva secção de referências bibliográficas e que todas as eventuais partes transcritas ou utilizadas de outras fontes estão devidamente assinaladas, identificadas e evidenciadas.
+REFERÊNCIAS E FONTES DE INFORMAÇÃO UTILIZADAS:
+ - Slides das aulas de SOPE.
+ - Manuais no terminal do Unix.

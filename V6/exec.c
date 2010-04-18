@@ -197,6 +197,8 @@ static pid_t exec_pipe_next_cmd(Command_Info *cmd_info, int* fildes, int* fildes
 static void free_pipes(int** pipes, int size) {
 	int i = 0;
 	for (i = 0; i < size; i++) {
+		close(pipes[i][0]);
+		close(pipes[i][1]);
 		free(pipes[i]);
 	}
 	free(pipes);
@@ -219,7 +221,7 @@ pid_t* exec_pipe(Command_Info *cmd_info) {
 	
 	// inicia o array para os pipes
 	int** pipes = calloc( cmd_count, sizeof(int*));
-	pipes[cmd_count] = NULL; // nao associa um pipe ao ultimo comando
+	pipes[cmd_count - 1] = NULL; // nao associa um pipe ao ultimo comando
 	int i;
 	for (i = 0; i < cmd_count - 1; i++) {
 		pipes[i] = calloc( 2, sizeof(int));

@@ -1,0 +1,88 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Implementação de Comandos com Pipes}
+%\subtitle{Versão 6 da Mini Shell para o Trabalho de SOPE}
+\author{Pedro Chambino e Eva Marques}
+\date{2010-04-17}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\section{Primeiras Tentativas}
+
+Inicialmente tentamos desenvolver uma solução recursiva em que um comando verificava se tinha um próximo comando e de seguida criava um pipe para ligar a sua saída ao pipe e passava este na chamada recursiva para o próximo comando que depois o ligava à sua entrada e depois voltava a verificar se tinha outro próximo comando até não ter um próximo comando.
+
+No entanto, esta solução levou a alguns problemas e devido à dificuldade de fazer o debugging acabamos por desenvolver uma solução iterativa sugerida pelo Professor José Alves da Silva.
+
+\section{Solução Desenvolvida na Versão Final}
+
+Para podermos executar vários comandos ligados por pipes:
+
+\begin{itemize}
+
+	\item modificamos a estrutura do Command\_Info de forma a ter um elemento que aponta para o próximo comando a executar ligado por um pipe;
+
+	\item criamos uma função exec\_pipe() para executar o comando com pipes em que segue os seguintes passos:
+
+	\begin{itemize}
+
+		\item conta o numero de comandos a executar;
+		
+		\item inicializa um array terminado por 0 (zero) para guardar as PIDs do processos filhos, que é devolvido pela função;
+		
+		\item inicializa um array terminado por NULL para guardar os pipes. Os pipes são inicializados logo de seguida;
+		
+		\item executa-se o primeiro comando numa função chamada exec\_pipe\_first\_cmd(), que:
+		
+		\begin{itemize}
+		
+			\item faz o fork() e retorna a PID do processo ou -1 em caso de erro;
+			
+			\item o processo filho depois verifica se o comando é em background:
+			
+			\item se sim: muda o grupo do processo para não receber os sinais da shell e se não redireccionar a entrada para um ficheiro então redirecciona para /dev/null;
+			
+			\item se não: simplesmente verifica se tem de redireccionar a entrada para um ficheiro.
+			
+			\item verifica se tem um pipe para redireccionar a saída:
+			
+			\item se não: simplesmente verifica se tem de redireccionar a saída para um ficheiro. Isto permite executar comandos simples (sem pipes);
+			
+			\item se sim: fecha a leitura do pipe. Se tiver um ficheiro para redireccionar a saída então também fecha a escrita no pipe, se não, redirecciona a saída para o pipe.
+			
+			\item e finalmente executa o comando.
+			
+		\end{itemize}
+		
+		\item depois num ciclo passando pelos próximos comandos estes são executados numa função chamada exec\_pipe\_next\_cmd() semelhante à função exec\_pipe\_first\_cmd():
+		
+		\begin{itemize}
+			
+			\item mas que não verifica se o comando está em background, pois isso é verificado no primeiro comando;
+			
+			\item começa por fechar a escrita no pipe anterior. Se tiver um ficheiro para redireccionar a entrada então também fecha a leitura do pipe anterior, se não, redirecciona a entrada para o pipe;
+			
+			\item o redireccionamento da saída é feito como em exec\_pipe\_first\_cmd(), mas para o pipe seguinte;
+			
+			\item e finalmente executa o comando.
+			
+		\end{itemize}
+		
+		\item por fim os pipes no processo pai (na shell) são fechados e o seu array libertado, retornando o array dos PIDs dos processos filhos.
+		
+		\item Em caso de erro nos fork() dos processos filhos, a funçao retorna NULL depois de fechar os pipes e libertar os arrays inicializados.
+		
+	\end{itemize}
+
+\end{itemize}
+
+\end{document}  
