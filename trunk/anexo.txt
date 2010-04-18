@@ -1,0 +1,51 @@
+V1
+- totalmente implementado
+- testes: msh$ ls -la
+ msh$ date
+ msh$ rm file
+ msh$ grep x
+ msh$ cp file1 file2
+ msh$ ls &
+ msh$
+ (Testa vazio)
+ msh$ ls >
+ (Testa erro de parsing)
+
+V2
+- totalmente implementado
+- testes: msh$ ls -la
+ msh$ date
+ msh$ rm file
+ msh$ grep x
+ msh$ grep x file
+ msh$ cp file1 file2
+ msh$ pwd
+
+V3
+- totalmente implementado
+- testes: msh$ ls -la > out
+ msh$ rm out
+ msh$ grep x < file > out
+ msh$ grep x file
+ msh$ cat > out
+ msh$ cat < file > out
+ msh$ cat < file
+
+V4
+- totalmente implementado
+- testes: msh$ ls -R /
+ ^C
+
+V5
+- totalmente implementado
+- testes: msh$ ls &
+ msh$ ls -R / &
+ ^C (é preciso fazer kill de outra consola)
+ msh$ cat < file > out &
+V6
+- parcialmente implementado (+) executa comandos em pipeline
+ (+) se os comandos não ficam à espera do eof então suporta mais do que um pipe (-) se os comandos ficam à espera do eof então apenas suporta com um pipe
+- problemas conhecidos: - com um comando que faça apenas:  scanf("%s", str); printf("%s", str); os pipes funcionam todos.
+ No entanto, como a maior parte dos comandos fica à espera do eof, do segundo comando para a frente os processos ficam bloqueados a correr, provavelmente porque nao recebem o eof.
+ - por vezes o primeiro comando com pipes parece que não funciona, mas depois disso todos os outros funcionam.
+ 

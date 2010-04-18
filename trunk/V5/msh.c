@@ -5,6 +5,26 @@ static pid_t child = 0; ///< PID of child process, maior que 0 se ha um processo
 static int status = 0; ///< Process status
 static pid_t childBG = 0; ///< PID of a child process, variavel auxiliar
 
+/** Verifica o status do processo.
+	Imprime mensagens de erro se necessario.
+*/
+static void checkStatus(const int *status) {
+	if (WIFEXITED(*status))
+		switch (WEXITSTATUS(*status)) {
+			case 1:
+				fprintf(stderr, "Command Not Found!\n");
+				break;
+			case 2:
+				fprintf(stderr, "Input File Not Found!\n");
+				break;
+			default:
+				break;
+		}
+}
+
+/** SIGINT handler.
+	Sends the SIGKILL to the child process.
+*/
 void sigint_handler(int sig) {
 	if (child > 0) { // exists a child running in foreground
 		kill(child, SIGKILL);
@@ -12,6 +32,10 @@ void sigint_handler(int sig) {
 	}
 }
 
+/** SIGCHLD handler.
+	Waits for the child, and processes it's status.
+	Diferenciates a background process from a foreground one.
+*/
 void sigchld_handler(int sig) {
 	childBG = wait(&status);
 
@@ -64,18 +88,4 @@ void prompt() {
 	}
 
 	deleteCommand_Info(cmd_info);
-}
-
-void checkStatus(const int *status) {
-	if (WIFEXITED(*status))
-		switch (WEXITSTATUS(*status)) {
-			case 1:
-				fprintf(stderr, "Command Not Found!\n");
-				break;
-			case 2:
-				fprintf(stderr, "Input File Not Found!\n");
-				break;
-			default:
-				break;
-		}
 }

@@ -3,9 +3,14 @@
 
 static pid_t child = 0; ///< PID of child process
 
+/** SIGINT handler.
+	Sends the SIGKILL to the child process.
+*/
 void sigint_handler(int sig) {
-	if (child != 0)
+	if (child > 0) {
 		kill(child, SIGKILL);
+		printf("\n");
+	}
 }
 
 void prompt() {
