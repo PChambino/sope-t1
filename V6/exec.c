@@ -74,7 +74,7 @@ pid_t exec_simple_back(Command_Info *cmd_info) {
 }
 /** Funcao auxiliar para executar o primeiro comando com pipes.
 */
-static pid_t exec_pipe_first_cmd(Command_Info *cmd_info, int* fildes) {
+static pid_t exec_pipe_first_cmd(Command_Info *cmd_info, int* fildes, int** pipes) {
 	pid_t child = fork();
 
 	if (child < 0) // child process not created!
@@ -125,6 +125,15 @@ static pid_t exec_pipe_first_cmd(Command_Info *cmd_info, int* fildes) {
 		dup2(file, STDOUT_FILENO);
 	}
 	
+	// fecha todos os pipes menos o primeiro
+	int i = 0;
+	for (i = 0; pipes[i] != NULL; i++) {
+		if (pipes[i] != fildes) {
+			close(pipes[i][0]);
+			close(pipes[i][1]);
+		}
+	}
+	
 	// execute command
 	execvp(cmd_info->arg[0], cmd_info->arg);
 	
@@ -134,7 +143,7 @@ static pid_t exec_pipe_first_cmd(Command_Info *cmd_info, int* fildes) {
 
 /** Funcao auxiliar para executar comandos ligados por pipes apos a chamada de exec_pipe_first_cmd().
 */
-static pid_t exec_pipe_next_cmd(Command_Info *cmd_info, int* fildes, int* fildes_next) {
+static pid_t exec_pipe_next_cmd(Command_Info *cmd_info, int* fildes, int* fildes_next, int** pipes) {
 	pid_t child = fork();
 
 	if (child < 0) // child process not created!
@@ -185,6 +194,15 @@ static pid_t exec_pipe_next_cmd(Command_Info *cmd_info, int* fildes, int* fildes
 		dup2(file, STDOUT_FILENO);
 	}
 
+	// fecha todos os pipes menos os usados pelo processo
+	int i = 0;
+	for (i = 0; pipes[i] != NULL; i++) {
+		if (pipes[i] != fildes && pipes[i] != fildes_next) {
+			close(pipes[i][0]);
+			close(pipes[i][1]);
+		}
+	}
+	
 	// execute command
 	execvp(cmd_info->arg[0], cmd_info->arg);
 	
@@ -229,7 +247,7 @@ pid_t* exec_pipe(Command_Info *cmd_info) {
 	}
 	
 	// executa o primeiro comando
-	if ((children[0] = exec_pipe_first_cmd(cmd_info, pipes[0])) == -1) {
+	if ((children[0] = exec_pipe_first_cmd(cmd_info, pipes[0], pipes)) == -1) {
 		free(children);
 		free_pipes(pipes, cmd_count - 1);
 		return NULL;
@@ -238,7 +256,7 @@ pid_t* exec_pipe(Command_Info *cmd_info) {
 	// executa os restantes comandos
 	i = 0;
 	for (cmd = cmd_info->next; cmd != NULL; cmd = cmd->next) {
-		if ((children[i+1] = exec_pipe_next_cmd(cmd, pipes[i], pipes[i+1])) == -1) {
+		if ((children[i+1] = exec_pipe_next_cmd(cmd, pipes[i], pipes[i+1], pipes)) == -1) {
 			free(children);
 			free_pipes(pipes, cmd_count - 1);
 			return NULL;
