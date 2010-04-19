@@ -43,9 +43,7 @@ V5
  ^C (é preciso fazer kill de outra consola)
  msh$ cat < file > out &
 V6
-- parcialmente implementado (+) executa comandos em pipeline
- (+) se os comandos não ficam à espera do eof então suporta mais do que um pipe (-) se os comandos ficam à espera do eof então apenas suporta com um pipe
-- problemas conhecidos: - com um comando que faça apenas:  scanf("%s", str); printf("%s", str); os pipes funcionam todos.
- No entanto, como a maior parte dos comandos fica à espera do eof, do segundo comando para a frente os processos ficam bloqueados a correr, provavelmente porque nao recebem o eof.
- - por vezes o primeiro comando com pipes parece que não funciona, mas depois disso todos os outros funcionam.
+- totalmente implementado msh$ ls | grep x
+ msh$ ls | grep x | less
+ msh$ ls -laR | grep jpg | sort > images.txt &
  
